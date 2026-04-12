@@ -15,10 +15,6 @@ repositories {
 		name = "Terraformers"
 		url = "https://maven.terraformersmc.com/"
 	}
-	maven {
-		name = "Masa"
-		url = "https://masa.dy.fi/maven"
-	}
 }
 
 loom {
@@ -39,9 +35,7 @@ dependencies {
 
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 	implementation "com.google.code.gson:gson:2.13.1"
-	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-
-	implementation "carpet:fabric-carpet:${project.carpet_version}" // remember to remove
+	compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
