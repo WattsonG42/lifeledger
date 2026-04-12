@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "lifeledger.mixin.client",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"TabListMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

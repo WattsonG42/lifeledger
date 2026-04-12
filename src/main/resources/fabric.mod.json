@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "lifeledger",
+	"version": "${version}",
+	"name": "lifeledger",
+	"description": "Tired of players treating death like nothing? Give them lives, when they run out so do they! Adds some stakes to the SMP experience, highly configurable to accommodate different groups at different skill levels.",
+	"authors": [
+		"KommissarHusdyr"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/lifeledger/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"lifeledger.Lifeledger"
+		],
+		"client": [
+			"lifeledger.LifeledgerClient"
+		],
+		"modmenu": [
+			"lifeledger.LifeledgerModMenu"
+		]
+	},
+	"mixins": [
+		"lifeledger.mixins.json",
+		{
+			"config": "lifeledger.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~26.1.1",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}
