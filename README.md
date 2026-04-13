@@ -1,7 +1,7 @@
 # LifeLedger
 A Fabric Minecraft mod that gives each player a finite amount of lives, called "stocks". Lose them all and you're permanently banned. No exceptions.
 
-Built to test my theory that having meaningfull deaths is a positive impact on the typical 2-week SMP to increase longevity and meaningfull gameplay. 
+Built to test my theory that having meaningful deaths is a positive impact on the typical 2-week SMP to increase longevity and meaningfull gameplay. 
 
 ---
 
