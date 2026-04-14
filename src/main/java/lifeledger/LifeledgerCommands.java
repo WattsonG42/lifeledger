@@ -53,7 +53,10 @@ public class LifeledgerCommands {
                         .then(configToggle("elderguardian",(cfg, v) -> cfg.countElderGuardianDeaths = v))
                         .then(configToggle("deathsentence",(cfg, v) -> cfg.deathSentenceEnabled = v))
                         .then(configToggle("explosion",    (cfg, v) -> cfg.countExplosionDeaths = v))
-                        .then(configToggle("anvil",        (cfg, v) -> cfg.countAnvilDeaths = v)))
+                        .then(configToggle("anvil",        (cfg, v) -> cfg.countAnvilDeaths = v))
+                        .then(Commands.literal("deathsentencewindow")
+                            .then(Commands.argument("seconds", IntegerArgumentType.integer(1, 3600))
+                                .executes(LifeledgerCommands::cmdDeathSentenceWindow))))
             )
         );
     }
@@ -111,6 +114,15 @@ public class LifeledgerCommands {
         ctx.getSource().sendSuccess(() -> Component.literal(
             player.getName().getString() + " has " + stocks + " stock(s)"), false);
         return stocks;
+    }
+
+    private static int cmdDeathSentenceWindow(CommandContext<CommandSourceStack> ctx) {
+        int seconds = IntegerArgumentType.getInteger(ctx, "seconds");
+        Lifeledger.CONFIG.getConfig().deathSentenceWindowSeconds = seconds;
+        Lifeledger.CONFIG.save();
+        ctx.getSource().sendSuccess(() -> Component.literal(
+            "[LifeLedger] Death Sentence window set to " + seconds + "s"), true);
+        return seconds;
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> configToggle(String name, BiConsumer<ServerConfig, Boolean> setter) {
