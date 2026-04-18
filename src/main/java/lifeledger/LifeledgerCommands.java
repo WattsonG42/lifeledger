@@ -20,30 +20,43 @@ import java.util.function.BiConsumer;
 
 public class LifeledgerCommands {
 
+    private static boolean isOp(CommandSourceStack src) {
+        return src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+    } // helper
+
     public static void register(StockStore stockStore) {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
             dispatcher.register(
                 Commands.literal("lifeledger")
-                    .requires(src -> src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+                    .then(Commands.literal("stocks")
+                        .executes(ctx -> cmdStocksSelf(ctx, stockStore))
+                        .then(Commands.argument("player", EntityArgument.player())
+                            .executes(ctx -> cmdStocksOther(ctx, stockStore))))
                     .then(Commands.literal("default")
+                        .requires(LifeledgerCommands::isOp)
                         .then(Commands.argument("amount", IntegerArgumentType.integer(1))
                             .executes(ctx -> cmdDefault(ctx, stockStore))))
                     .then(Commands.literal("set")
+                        .requires(LifeledgerCommands::isOp)
                         .then(Commands.argument("player", EntityArgument.player())
                             .then(Commands.argument("amount", IntegerArgumentType.integer(0))
                                 .executes(ctx -> cmdSet(ctx, stockStore)))))
                     .then(Commands.literal("give")
+                        .requires(LifeledgerCommands::isOp)
                         .then(Commands.argument("player", EntityArgument.player())
                             .then(Commands.argument("amount", IntegerArgumentType.integer(1))
                                 .executes(ctx -> cmdGive(ctx, stockStore)))))
                     .then(Commands.literal("take")
+                        .requires(LifeledgerCommands::isOp)
                         .then(Commands.argument("player", EntityArgument.player())
                             .then(Commands.argument("amount", IntegerArgumentType.integer(1))
                                 .executes(ctx -> cmdTake(ctx, stockStore)))))
                     .then(Commands.literal("get")
+                        .requires(LifeledgerCommands::isOp)
                         .then(Commands.argument("player", EntityArgument.player())
                             .executes(ctx -> cmdGet(ctx, stockStore))))
                     .then(Commands.literal("config")
+                        .requires(LifeledgerCommands::isOp)
                         .then(configToggle("mobs",         (cfg, v) -> cfg.countMobDeaths = v))
                         .then(configToggle("pvp",          (cfg, v) -> cfg.countPvpDeaths = v))
                         .then(configToggle("fall",         (cfg, v) -> cfg.countFallDamage = v))
@@ -109,6 +122,21 @@ public class LifeledgerCommands {
     }
 
     private static int cmdGet(CommandContext<CommandSourceStack> ctx, StockStore stockStore) throws CommandSyntaxException {
+        ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
+        int stocks = stockStore.getStocks(player.getUUID());
+        ctx.getSource().sendSuccess(() -> Component.literal(
+            player.getName().getString() + " has " + stocks + " stock(s)"), false);
+        return stocks;
+    }
+
+    private static int cmdStocksSelf(CommandContext<CommandSourceStack> ctx, StockStore stockStore) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        int stocks = stockStore.getStocks(player.getUUID());
+        ctx.getSource().sendSuccess(() -> Component.literal("You have " + stocks + " stock(s)"), false);
+        return stocks;
+    }
+
+    private static int cmdStocksOther(CommandContext<CommandSourceStack> ctx, StockStore stockStore) throws CommandSyntaxException {
         ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
         int stocks = stockStore.getStocks(player.getUUID());
         ctx.getSource().sendSuccess(() -> Component.literal(
