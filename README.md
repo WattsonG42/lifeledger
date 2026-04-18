@@ -63,11 +63,14 @@ The mod is inherently server-authoritative. The server config lives at 'config/l
 - **Mod Menu** A built-in config screen accessible through the Mod Menu mod (optional, client side) . OPs see editable toggles; non-OPs see read only so they know whats off or on. 
 - **In-game commands** '/lifeledger config <key> <true|false>' for all death filter toggle.
 
+**Non-op commands:**: <br>
+/lifeledger stocks (name) - checks and outputs the stock count of the player, if no name is given it checks the calling player's stock count 
+
 **Admin commands:** <br>
 /lifeledger default              - set default stocks for new players <br>
 /lifeledger set                  - set a specific player's stocks <br>
 /lifeledger give                 - add stocks to a player <br>
 /lifeledger take                 - remove stocks from a player <br>
 /lifeledger get                  - check a player's current stocks <br>
-/lifeledger config  <true|false> - toggle a death filter settings <br>
+/lifeledger config  (true|false) - toggle a death filter settings <br>
 /lifeledger config deathsentencewindow - Sets the time window for death sentence
