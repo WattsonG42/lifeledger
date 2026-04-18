@@ -43,6 +43,10 @@ The mark presists across melee hits, projectiles, TNT, and End Crystal detonatio
 
 The idea is again to let players express intent: if you're actively bloodthirsthy and want to see someone loose a stock, toggling off PvP deaths shouldn't save them.
 
+The time window is 20 by default, and can be changed using
+``
+/lifeledger config deathsentencewindow <seconds>
+``
 
 ---
 
@@ -59,10 +63,11 @@ The mod is inherently server-authoritative. The server config lives at 'config/l
 - **Mod Menu** A built-in config screen accessible through the Mod Menu mod (optional, client side) . OPs see editable toggles; non-OPs see read only so they know whats off or on. 
 - **In-game commands** '/lifeledger config <key> <true|false>' for all death filter toggle.
 
-**Admin commands:**
-/lifeledger default              - set default stocks for new players
-/lifeledger set                  - set a specific player's stocks
-/lifeledger give                 - add stocks to a player
-/lifeledger take                 - remove stocks from a player
-/lifeledger get                  - check a player's current stocks
-/lifeledger config  <true|false> - toggle a death filter settin
+**Admin commands:** <br>
+/lifeledger default              - set default stocks for new players <br>
+/lifeledger set                  - set a specific player's stocks <br>
+/lifeledger give                 - add stocks to a player <br>
+/lifeledger take                 - remove stocks from a player <br>
+/lifeledger get                  - check a player's current stocks <br>
+/lifeledger config  <true|false> - toggle a death filter settings <br>
+/lifeledger config deathsentencewindow - Sets the time window for death sentence
