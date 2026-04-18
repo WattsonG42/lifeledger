@@ -61,7 +61,7 @@ Players can optionally see everyone's remaning stocks as little heart icons dire
 The mod is inherently server-authoritative. The server config lives at 'config/lifeledger.json' Admins can change settings at runtime via:
 
 - **Mod Menu** A built-in config screen accessible through the Mod Menu mod (optional, client side) . OPs see editable toggles; non-OPs see read only so they know whats off or on. 
-- **In-game commands** '/lifeledger config <key> <true|false>' for all death filter toggle.
+- **In-game commands** '/lifeledger config (key) (true|false)' for all death filter toggle.
 
 **Non-op commands:**: <br>
 /lifeledger stocks (name) - checks and outputs the stock count of the player, if no name is given it checks the calling player's stock count 
