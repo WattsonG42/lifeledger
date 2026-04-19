@@ -7,7 +7,11 @@
 	"authors": [
 		"KommissarHusdyr"
 	],
-	"license": "CC0-1.0",
+	"contact": {
+		"homepage": "https://modrinth.com/project/lifeledger",
+		"sources": "https://github.com/WattsonG42/lifeledger"
+	},
+	"license": "MIT",
 	"icon": "assets/lifeledger/icon.png",
 	"environment": "*",
 	"entrypoints": {
