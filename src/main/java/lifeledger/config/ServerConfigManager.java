@@ -56,5 +56,5 @@ public class ServerConfigManager {
     }
     public ServerConfig getConfig() {
         return config;
-    } 
+    }
 }

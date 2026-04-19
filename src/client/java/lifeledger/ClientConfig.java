@@ -15,7 +15,7 @@ public class ClientConfig {
     private static final Path CONFIG_PATH = FabricLoader.getInstance()
         .getConfigDir().resolve("lifeledger-client.json");
 
-    public boolean showStocksInTabList = false;
+    public boolean showStocksInTabList = true;
 
     private static ClientConfig instance = new ClientConfig();
 

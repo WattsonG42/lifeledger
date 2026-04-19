@@ -47,7 +47,7 @@ public class TabListMixin {
         int displayFull = Math.min(stocks, displayMax);
 
         int step = 7;
-        int startX = entryWidth + entryX + 2; //makes shit look nice
+        int startX = entryWidth + entryX + 2;
 
         RenderPipeline pipeline = RenderPipelines.GUI_TEXTURED;
         for (int i = 0; i < displayMax; i++) {
