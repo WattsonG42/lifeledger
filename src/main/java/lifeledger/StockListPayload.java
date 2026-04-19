@@ -10,9 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public record
-
-StockListPayload(Map<UUID, Integer> stocks, int maxStocks) implements CustomPacketPayload {
+public record StockListPayload(Map<UUID, Integer> stocks, Map<UUID, String> names, int maxStocks) implements CustomPacketPayload {
 
     public static final Type<StockListPayload> TYPE = new Type<>(
         Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "stock_list")
@@ -25,16 +23,20 @@ StockListPayload(Map<UUID, Integer> stocks, int maxStocks) implements CustomPack
             for (Map.Entry<UUID, Integer> e : p.stocks().entrySet()) {
                 buf.writeUUID(e.getKey());
                 buf.writeVarInt(e.getValue());
+                buf.writeUtf(p.names().getOrDefault(e.getKey(), ""));
             }
         },
         buf -> {
             int max = buf.readVarInt();
             int size = buf.readVarInt();
-            Map<UUID, Integer> map = new HashMap<>(size);
+            Map<UUID, Integer> stocks = new HashMap<>(size);
+            Map<UUID, String>  names  = new HashMap<>(size);
             for (int i = 0; i < size; i++) {
-                map.put(buf.readUUID(), buf.readVarInt());
+                UUID uuid = buf.readUUID();
+                stocks.put(uuid, buf.readVarInt());
+                names.put(uuid, buf.readUtf());
             }
-            return new StockListPayload(map, max);
+            return new StockListPayload(stocks, names, max);
         }
     );
 

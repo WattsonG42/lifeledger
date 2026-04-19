@@ -5,17 +5,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-
-// caches current online players, updates when players die or join, minimal size and network overhead
 public final class StockCache {
-    private record State(Map<UUID, Integer> stocks, int maxStocks) {}
+    private record State(Map<UUID, Integer> stocks, Map<UUID, String> names, int maxStocks) {}
 
-    private static volatile State state = new State(Collections.emptyMap(), 0);
+    private static volatile State state = new State(Collections.emptyMap(), Collections.emptyMap(), 0);
 
     private StockCache() {}
 
-    public static void update(Map<UUID, Integer> stocks, int maxStocks) {
-        state = new State(Map.copyOf(stocks), maxStocks);
+    public static void update(Map<UUID, Integer> stocks, Map<UUID, String> names, int maxStocks) {
+        state = new State(Map.copyOf(stocks), Map.copyOf(names), maxStocks);
     }
 
     public static int getStocks(UUID uuid) {
@@ -27,18 +25,23 @@ public final class StockCache {
         return state.maxStocks();
     }
 
+    public static Map<UUID, Integer> getAllStocks() { return state.stocks(); }
+    public static Map<UUID, String>  getAllNames()  { return state.names(); }
+
     public static void applyDelta(UUID uuid, int stocks, boolean eliminated) {
         State current = state;
-        HashMap<UUID, Integer> updated = new HashMap<>(current.stocks());
+        HashMap<UUID, Integer> updatedStocks = new HashMap<>(current.stocks());
+        HashMap<UUID, String>  updatedNames  = new HashMap<>(current.names());
         if (eliminated) {
-            updated.remove(uuid);
+            updatedStocks.remove(uuid);
+            updatedNames.remove(uuid);
         } else {
-            updated.put(uuid, stocks);
+            updatedStocks.put(uuid, stocks);
         }
-        state = new State(Map.copyOf(updated), current.maxStocks());
+        state = new State(Map.copyOf(updatedStocks), Map.copyOf(updatedNames), current.maxStocks());
     }
 
     public static void clear() {
-        state = new State(Collections.emptyMap(), 0);
+        state = new State(Collections.emptyMap(), Collections.emptyMap(), 0);
     }
 }

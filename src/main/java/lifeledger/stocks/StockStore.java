@@ -21,6 +21,7 @@ public class StockStore {
 
     private final Path storePath;
     private final Map<UUID, Integer> stocks = new HashMap<>();
+    private final Map<UUID, String>  names  = new HashMap<>();
 
     public StockStore() {
         this.storePath = FabricLoader.getInstance()
@@ -34,6 +35,7 @@ public class StockStore {
 
     public void load() {
         stocks.clear();
+        names.clear();
 
         if (!Files.exists(storePath)) {
             save();
@@ -51,12 +53,16 @@ public class StockStore {
             for (Map.Entry<String, Integer> entry : data.players.entrySet()) {
                 try {
                     UUID uuid = UUID.fromString(entry.getKey());
-                    Integer value = entry.getValue();
+                    if (entry.getValue() != null) stocks.put(uuid, entry.getValue());
+                } catch (IllegalArgumentException ignored) {}
+            }
 
-                    if (value != null) {
-                        stocks.put(uuid, value);
-                    }
-                } catch (IllegalArgumentException ignored) {
+            if (data.names != null) {
+                for (Map.Entry<String, String> entry : data.names.entrySet()) {
+                    try {
+                        UUID uuid = UUID.fromString(entry.getKey());
+                        if (entry.getValue() != null) names.put(uuid, entry.getValue());
+                    } catch (IllegalArgumentException ignored) {}
                 }
             }
         } catch (IOException e) {
@@ -66,10 +72,10 @@ public class StockStore {
 
     public void save() {
         StockStoreData data = new StockStoreData();
-
-        for (Map.Entry<UUID, Integer> entry : stocks.entrySet()) {
+        for (Map.Entry<UUID, Integer> entry : stocks.entrySet())
             data.players.put(entry.getKey().toString(), entry.getValue());
-        }
+        for (Map.Entry<UUID, String> entry : names.entrySet())
+            data.names.put(entry.getKey().toString(), entry.getValue());
 
         try {
             Files.createDirectories(storePath.getParent());
@@ -81,28 +87,22 @@ public class StockStore {
         }
     }
 
-    public boolean hasPlayer(UUID uuid) {
-        return stocks.containsKey(uuid);
-    }
-
-    public int getStocks(UUID uuid) {
-        Integer value = stocks.get(uuid);
-        return value == null ? 0 : value;
-    }
-
-    public void setStocks(UUID uuid, int amount) {
-        stocks.put(uuid, amount);
-    }
+    public boolean hasPlayer(UUID uuid)            { return stocks.containsKey(uuid); }
+    public int     getStocks(UUID uuid)             { Integer v = stocks.get(uuid); return v == null ? 0 : v; }
+    public void    setStocks(UUID uuid, int amount) { stocks.put(uuid, amount); }
+    public void    setName(UUID uuid, String name)  { names.put(uuid, name); }
+    public String  getName(UUID uuid)               { return names.getOrDefault(uuid, ""); }
 
     public void removePlayer(UUID uuid) {
         stocks.remove(uuid);
+        names.remove(uuid);
     }
 
-    public Map<UUID, Integer> getAllStocks() {
-        return Map.copyOf(stocks);
-    }
+    public Map<UUID, Integer> getAllStocks() { return Map.copyOf(stocks); }
+    public Map<UUID, String>  getAllNames()  { return Map.copyOf(names); }
 
     private static class StockStoreData {
         Map<String, Integer> players = new HashMap<>();
+        Map<String, String>  names   = new HashMap<>();
     }
 }

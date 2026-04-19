@@ -10,7 +10,7 @@ public class LifeledgerClient implements ClientModInitializer {
         ClientConfig.load();
 
         ClientPlayNetworking.registerGlobalReceiver(StockListPayload.TYPE, (payload, context) ->
-            context.client().execute(() -> StockCache.update(payload.stocks(), payload.maxStocks()))
+            context.client().execute(() -> StockCache.update(payload.stocks(), payload.names(), payload.maxStocks()))
         );
 
         ClientPlayNetworking.registerGlobalReceiver(StockDeltaPayload.TYPE, (payload, context) ->

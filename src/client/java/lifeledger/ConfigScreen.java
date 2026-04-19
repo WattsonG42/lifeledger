@@ -42,6 +42,11 @@ public class ConfigScreen extends Screen {
         this.tabNavigationBar.selectTab(selectedTab, false);
 
         this.addRenderableWidget(
+            Button.builder(Component.literal("Player Stocks"), btn -> this.minecraft.setScreen(new PlayerListScreen(this)))
+                .bounds(this.width / 2 - 50, this.height - 55, 100, 20)
+                .build()
+        );
+        this.addRenderableWidget(
             Button.builder(Component.literal("Close"), btn -> this.minecraft.setScreen(parent))
                 .bounds(this.width / 2 - 50, this.height - 30, 100, 20)
                 .build()
@@ -101,6 +106,11 @@ public class ConfigScreen extends Screen {
                 rows.addChild(serverToggle("Count Elder Guardian Deaths", snap.countElderGuardianDeaths(), canEdit, "elderguardian"));
                 rows.addChild(serverToggle("Count Explosion Deaths",      snap.countExplosionDeaths(),     canEdit, "explosion"));
                 rows.addChild(serverToggle("Count Anvil Deaths",          snap.countAnvilDeaths(),         canEdit, "anvil"));
+                rows.addChild(serverToggle("Count Fire/Lava Deaths",      snap.countFireDeaths(),          canEdit, "fire"));
+                rows.addChild(serverToggle("Count Drowning Deaths",       snap.countDrownDeaths(),         canEdit, "drown"));
+                rows.addChild(serverToggle("Count Freeze Deaths",         snap.countFreezeDeaths(),        canEdit, "freeze"));
+                rows.addChild(serverToggle("Count Magic Deaths",          snap.countMagicDeaths(),         canEdit, "magic"));
+                rows.addChild(serverToggle("Count Suffocation Deaths",    snap.countSuffocationDeaths(),   canEdit, "suffocation"));
                 rows.addChild(serverToggle("Death Sentence",              snap.deathSentenceEnabled(),     canEdit, "deathsentence"));
             }
         }

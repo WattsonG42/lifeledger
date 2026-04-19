@@ -67,7 +67,6 @@ public class Lifeledger implements ModInitializer {
 
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
             if (!(entity instanceof ServerPlayer victim)) return true;
-            // Resolve attacker: melee = getDirectEntity(), projectiles = getEntity(), crystals = tracked map
             ServerPlayer attacker = null;
             if (source.getDirectEntity() instanceof ServerPlayer p) attacker = p;
             else if (source.getEntity() instanceof ServerPlayer p) attacker = p;
@@ -82,7 +81,6 @@ public class Lifeledger implements ModInitializer {
 
             UUID attackerUUID = attacker.getUUID();
             UUID victimUUID = victim.getUUID();
-            // Marking triggers on any player-attributed hit (melee or bow) with the named item in main hand
             ItemStack weapon = attacker.getMainHandItem();
             if (CONFIG.getConfig().deathSentenceEnabled
                     && weapon.has(DataComponents.CUSTOM_NAME)) {
@@ -94,7 +92,6 @@ public class Lifeledger implements ModInitializer {
                     return true;
                 }
             }
-            // Any player damage (melee or projectile) refreshes an existing mark
             if (pvpTracker.refreshIfMarked(victimUUID, attackerUUID)) {
                 LOGGER.info("[LifeLedger] Death Sentence window refreshed: {} still targeting {}",
                     attacker.getName().getString(), victim.getName().getString());
@@ -107,14 +104,14 @@ public class Lifeledger implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, s) -> {
             ServerPlayer joiningPlayer = handler.getPlayer();
             UUID uuid = joiningPlayer.getUUID();
+            stockStore.setName(uuid, joiningPlayer.getScoreboardName());
             if (!stockStore.hasPlayer(uuid)) {
                 stockStore.setStocks(uuid, CONFIG.getConfig().defaultStocks);
-                stockStore.save();
             }
-            // Direct send to circumvent shaky getPlayers() timing
-            StockListPayload payload = new StockListPayload(stockStore.getAllStocks(), CONFIG.getConfig().defaultStocks);
+            stockStore.save();
+            StockListPayload payload = new StockListPayload(stockStore.getAllStocks(), resolveNames(s), CONFIG.getConfig().defaultStocks);
             ServerPlayNetworking.send(joiningPlayer, payload);
-            broadcastStockList(s); // joiner may get it twice, harmless
+            broadcastStockList(s);
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, s) -> {
@@ -141,31 +138,46 @@ public class Lifeledger implements ModInitializer {
             LOGGER.info("[LifeLedger] {} died. Stocks remaining: {}", player.getName().getString(), remaining);
 
             if (remaining <= 0) {
-                stockStore.removePlayer(uuid);
-            }
-            stockStore.save();
-
-            broadcastDelta(server, uuid, remaining, remaining <= 0);
-
-            if (remaining <= 0) {
-                String reason = CONFIG.getConfig().banMessage;
-                NameAndId nameAndId = new NameAndId(player.getUUID(), player.getScoreboardName());
-                server.getPlayerList().getBans().add(
-                    new UserBanListEntry(nameAndId, null, null, null, reason)
-                );
-                player.connection.disconnect(Component.literal(reason));
+                eliminate(player.getUUID(), player.getScoreboardName(), stockStore, server, CONFIG.getConfig().banMessage);
+            } else {
+                player.sendSystemMessage(Component.literal(
+                    "You lost a stock. Remaining: " + remaining + "/" + CONFIG.getConfig().defaultStocks));
+                stockStore.save();
+                broadcastDelta(server, uuid, remaining, false);
             }
         });
     }
 
     private void broadcastStockList(MinecraftServer s) {
-        StockListPayload payload = new StockListPayload(stockStore.getAllStocks(), CONFIG.getConfig().defaultStocks);
+        StockListPayload payload = new StockListPayload(stockStore.getAllStocks(), resolveNames(s), CONFIG.getConfig().defaultStocks);
         for (ServerPlayer p : s.getPlayerList().getPlayers()) {
             ServerPlayNetworking.send(p, payload);
         }
     }
 
-    private void broadcastDelta(MinecraftServer s, UUID uuid, int stocks, boolean eliminated) {
+    private Map<UUID, String> resolveNames(MinecraftServer s) {
+        return resolveNames(stockStore, s);
+    }
+
+    static Map<UUID, String> resolveNames(StockStore stocks, MinecraftServer s) {
+        Map<UUID, String> names = new HashMap<>(stocks.getAllNames());
+        for (ServerPlayer p : s.getPlayerList().getPlayers()) {
+            if (stocks.hasPlayer(p.getUUID())) names.put(p.getUUID(), p.getScoreboardName());
+        }
+        return names;
+    }
+
+    static void eliminate(UUID uuid, String name, StockStore stockStore, MinecraftServer server, String reason) {
+        stockStore.removePlayer(uuid);
+        stockStore.save();
+        broadcastDelta(server, uuid, 0, true);
+        NameAndId nameAndId = new NameAndId(uuid, name);
+        server.getPlayerList().getBans().add(new UserBanListEntry(nameAndId, null, null, null, reason));
+        ServerPlayer online = server.getPlayerList().getPlayer(uuid);
+        if (online != null) online.connection.disconnect(Component.literal(reason));
+    }
+
+    private static void broadcastDelta(MinecraftServer s, UUID uuid, int stocks, boolean eliminated) {
         StockDeltaPayload payload = new StockDeltaPayload(uuid, stocks, eliminated);
         for (ServerPlayer p : s.getPlayerList().getPlayers()) {
             ServerPlayNetworking.send(p, payload);
