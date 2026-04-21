@@ -17,6 +17,10 @@ import java.util.UUID;
 public class DeathFilter {
 
     public static boolean shouldCount(DamageSource source, @NonNull ServerConfig config, UUID playerUUID, PvpTracker pvpTracker) {
+        // Overrides
+        if (config.deathSentenceEnabled
+                && pvpTracker.isMarked(playerUUID, config.deathSentenceWindowSeconds)) return true;
+
         if (!config.countVoidDeaths      && source.is(DamageTypes.FELL_OUT_OF_WORLD))  return false;
         if (!config.countFallDamage      && source.is(DamageTypes.FALL))               return false;
         if (!config.countExplosionDeaths && source.is(DamageTypeTags.IS_EXPLOSION))    return false;
@@ -37,9 +41,6 @@ public class DeathFilter {
                 && source.getEntity() instanceof LivingEntity e
                 && !(e instanceof Player)) return false;
 
-        // Death Sentence: any marked player dies regardless of other settings
-        if (config.deathSentenceEnabled && source.getEntity() instanceof Player
-                && pvpTracker.isMarked(playerUUID, config.deathSentenceWindowSeconds)) return true;
         if (!config.countPvpDeaths && source.getEntity() instanceof Player) return false;
         return true;
     }
