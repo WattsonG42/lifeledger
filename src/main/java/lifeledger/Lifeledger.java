@@ -14,6 +14,7 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,11 +26,33 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 public class Lifeledger implements ModInitializer {
     public static final String MOD_ID = "lifeledger";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+    private static final String[] DEATH_SENTENCE_MESSAGES = new String[]{
+            "{attacker} wants to see you squirm.",
+            "{attacker} has sentenced you to death.",
+            "{attacker} is coming for your soul.",
+            "Death follows you now. {attacker} made sure of it.",
+            "{attacker} has marked you. Your time is running out.",
+            "{attacker} has put a price on your head.",
+            "Run. {attacker} is not done with you.",
+            "{attacker} has chosen you. Choose your next moves carefully.",
+            "The reaper answers to {attacker} now.",
+            "Pray.",
+            "L + ratio + Death Sentence - {attacker}",
+            "Run.",
+            "Tick tock",
+            "{attacker} doesn't need luck.",
+            "Time's up.",
+            "{attacker} will be there when you respawn."
+    };
+
+    private static final Random RANDOM = new Random();
 
     public static final ServerConfigManager CONFIG = new ServerConfigManager();
     private final StockStore stockStore = new StockStore();
@@ -89,6 +112,11 @@ public class Lifeledger implements ModInitializer {
                     pvpTracker.mark(victimUUID, attackerUUID);
                     LOGGER.info("[LifeLedger] {} marked {} with Death Sentence",
                         attacker.getName().getString(), victim.getName().getString());
+                    if (!ServerPlayNetworking.canSend(victim, StockListPayload.TYPE)) {
+                        String msg = DEATH_SENTENCE_MESSAGES[RANDOM.nextInt(DEATH_SENTENCE_MESSAGES.length)]
+                            .replace("{attacker}", attacker.getName().getString());
+                        victim.sendSystemMessage(Component.literal(msg).withStyle(ChatFormatting.DARK_RED));
+                    }
                     return true;
                 }
             }
