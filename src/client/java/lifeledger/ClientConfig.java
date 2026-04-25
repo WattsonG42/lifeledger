@@ -16,6 +16,7 @@ public class ClientConfig {
         .getConfigDir().resolve("lifeledger-client.json");
 
     public boolean showStocksInTabList = true;
+    public boolean impactFrameEnabled  = true;
 
     private static ClientConfig instance = new ClientConfig();
 

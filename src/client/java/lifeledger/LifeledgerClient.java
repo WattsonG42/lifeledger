@@ -3,6 +3,8 @@ package lifeledger;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.minecraft.resources.Identifier;
 
 public class LifeledgerClient implements ClientModInitializer {
     @Override
@@ -19,6 +21,15 @@ public class LifeledgerClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(ConfigSnapshotPayload.TYPE, (payload, context) ->
             context.client().execute(() -> ConfigSnapshotCache.update(payload))
+        );
+
+        ClientPlayNetworking.registerGlobalReceiver(DeathSentencePayload.TYPE, (payload, context) ->
+            context.client().execute(ImpactFrameRenderer::trigger)
+        );
+
+        HudElementRegistry.addLast(
+            Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "impact_frame"),
+            (graphics, deltaTracker) -> ImpactFrameRenderer.render(graphics)
         );
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {

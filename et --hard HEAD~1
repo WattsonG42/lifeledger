@@ -1,0 +1,30 @@
+* [33mc80b920[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m stuff
+* [33m19e69bf[m Added impact frames for death sentence application for players with the client mod
+* [33mdb9c22c[m Added death sentence messages at application for player awareness. Works without client mod
+* [33m58e1dac[m[33m ([m[1;31morigin/26.1.1[m[33m, [m[1;32m26.1.1[m[33m)[m Death sentence bug
+* [33me7d732e[m deleted placeholder
+* [33m318cd85[m Fixed license, fixed fabric.mod.json
+* [33m67be270[m cleanup
+* [33m95f37cf[m moved file to proper location
+* [33m23a8b40[m Added PvpTracker back after git shenanigans
+* [33m6303ff6[m Added client 'leaderboard' for player list. Added 5 new death toggles, + cleanup + new sprites
+* [33m8392b95[m updated README
+* [33m4bf7b51[m updated RAEDME
+* [33m8dca3c3[m Added a /lifeledger stocks to allow players to check their or other player's stocks
+* [33m7bfd432[m Updated README with new commands
+*   [33mb3b2551[m Merge branch '26.1.1' into dev
+[32m|[m[33m\[m  
+[32m|[m *   [33mc451f85[m Merge branch 'dev' of https://github.com/WattsonG42/lifeledger into 26.1.1
+[32m|[m [34m|[m[35m\[m  
+* [34m|[m [35m\[m   [33m7176d5b[m Merge branch 'dev' of https://github.com/WattsonG42/lifeledger into dev
+[34m|[m[35m\[m [34m\[m [35m\[m  
+[34m|[m [35m|[m[34m/[m [35m/[m  
+[34m|[m[34m/[m[35m|[m [35m/[m   
+[34m|[m [35m|[m[35m/[m    
+[34m|[m * [33m64afcf0[m Update README.md
+* [1;31m|[m [33m291a61c[m Added a command to set death sentence time window
+* [1;31m|[m [33m4f6c2d9[m Update README.md
+[1;31m|[m[1;31m/[m  
+* [33mac4f170[m Added correct license, removed unused carpet dependency used for testing and its maven repo, made modMenu optional
+* [33m74b2723[m Create README.md
+* [33m703e0d1[m Initial commit

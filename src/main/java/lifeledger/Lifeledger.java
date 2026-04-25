@@ -36,11 +36,11 @@ public class Lifeledger implements ModInitializer {
     private static final String[] DEATH_SENTENCE_MESSAGES = new String[]{
             "{attacker} wants to see you squirm.",
             "{attacker} has sentenced you to death.",
-            "{attacker} is coming for your soul.",
+            "{attacker} is coming for your soul ╹◡╹",
             "Death follows you now. {attacker} made sure of it.",
             "{attacker} has marked you. Your time is running out.",
             "{attacker} has put a price on your head.",
-            "Run. {attacker} is not done with you.",
+            "Run. {attacker} is not done with you ╹◡╹",
             "{attacker} has chosen you. Choose your next moves carefully.",
             "The reaper answers to {attacker} now.",
             "Pray.",
@@ -71,6 +71,7 @@ public class Lifeledger implements ModInitializer {
         PayloadTypeRegistry.clientboundPlay().register(StockListPayload.TYPE, StockListPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(StockDeltaPayload.TYPE, StockDeltaPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ConfigSnapshotPayload.TYPE, ConfigSnapshotPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(DeathSentencePayload.TYPE, DeathSentencePayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ConfigRequestPayload.TYPE, ConfigRequestPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(ConfigRequestPayload.TYPE, (payload, context) -> {
@@ -109,10 +110,14 @@ public class Lifeledger implements ModInitializer {
                     && weapon.has(DataComponents.CUSTOM_NAME)) {
                 String name = weapon.get(DataComponents.CUSTOM_NAME).getString();
                 if (name.equalsIgnoreCase(CONFIG.getConfig().deathSentenceItemName)) {
+                    boolean alreadyMarked = pvpTracker.isMarked(victimUUID, CONFIG.getConfig().deathSentenceWindowSeconds);
                     pvpTracker.mark(victimUUID, attackerUUID);
-                    LOGGER.info("[LifeLedger] {} marked {} with Death Sentence",
-                        attacker.getName().getString(), victim.getName().getString());
-                    if (!ServerPlayNetworking.canSend(victim, StockListPayload.TYPE)) {
+                    if (!alreadyMarked) {
+                        LOGGER.info("[LifeLedger] {} marked {} with Death Sentence",
+                            attacker.getName().getString(), victim.getName().getString());
+                        if (ServerPlayNetworking.canSend(victim, DeathSentencePayload.TYPE)) {
+                            ServerPlayNetworking.send(victim, new DeathSentencePayload());
+                        }
                         String msg = DEATH_SENTENCE_MESSAGES[RANDOM.nextInt(DEATH_SENTENCE_MESSAGES.length)]
                             .replace("{attacker}", attacker.getName().getString());
                         victim.sendSystemMessage(Component.literal(msg).withStyle(ChatFormatting.DARK_RED));

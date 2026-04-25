@@ -33,6 +33,15 @@ public class LifeledgerCommands {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
             dispatcher.register(
                 Commands.literal("lifeledger")
+                    .then(Commands.literal("testimpact")
+                        .requires(LifeledgerCommands::isOp)
+                        .executes(ctx -> {
+                            ServerPlayer player = ctx.getSource().getPlayer();
+                            if (player != null && ServerPlayNetworking.canSend(player, DeathSentencePayload.TYPE)) {
+                                ServerPlayNetworking.send(player, new DeathSentencePayload());
+                            }
+                            return 1;
+                        }))
                     .then(Commands.literal("stocks")
                         .executes(ctx -> cmdStocksSelf(ctx, stockStore))
                         .then(Commands.argument("player", EntityArgument.player())

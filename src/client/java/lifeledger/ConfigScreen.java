@@ -80,6 +80,10 @@ public class ConfigScreen extends Screen {
                 ClientConfig.get().showStocksInTabList,
                 v -> { ClientConfig.get().showStocksInTabList = v; ClientConfig.save(); }
             ));
+            rows.addChild(toggle("Death Sentence Impact Frame",
+                ClientConfig.get().impactFrameEnabled,
+                v -> { ClientConfig.get().impactFrameEnabled = v; ClientConfig.save(); }
+            ));
         }
 
         private static CycleButton<Boolean> toggle(String label, boolean initial, Consumer<Boolean> onChange) {
