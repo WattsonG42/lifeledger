@@ -116,6 +116,8 @@ public class ConfigScreen extends Screen {
                 rows.addChild(serverToggle("Count Magic Deaths",          snap.countMagicDeaths(),         canEdit, "magic"));
                 rows.addChild(serverToggle("Count Suffocation Deaths",    snap.countSuffocationDeaths(),   canEdit, "suffocation"));
                 rows.addChild(serverToggle("Death Sentence",              snap.deathSentenceEnabled(),     canEdit, "deathsentence"));
+                rows.addChild(new StringWidget(200, 20, Component.literal("Default stocks: " + snap.defaultStocks()), font));
+                rows.addChild(new StringWidget(200, 20, Component.literal("DS window: " + snap.deathSentenceWindowSeconds() + "s"), font));
             }
         }
 

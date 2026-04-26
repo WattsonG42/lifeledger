@@ -30,6 +30,10 @@ public final class ImpactFrameRenderer {
         triggerTime = System.currentTimeMillis();
     }
 
+    public static void reset() {
+        triggerTime = -1;
+    }
+
     public static void render(GuiGraphicsExtractor graphics) {
         if (!ClientConfig.get().impactFrameEnabled) return;
         if (triggerTime < 0) return;

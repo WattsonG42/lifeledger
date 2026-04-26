@@ -174,7 +174,7 @@ public class Lifeledger implements ModInitializer {
                 eliminate(player.getUUID(), player.getScoreboardName(), stockStore, server, CONFIG.getConfig().banMessage);
             } else {
                 player.sendSystemMessage(Component.literal(
-                    "You lost a stock. Remaining: " + remaining + "/" + CONFIG.getConfig().defaultStocks));
+                    "You lost a stock. Stocks remaining: " + remaining));
                 stockStore.save();
                 broadcastDelta(server, uuid, remaining, false);
             }

@@ -25,7 +25,9 @@ public record ConfigSnapshotPayload(
     boolean countMagicDeaths,
     boolean countSuffocationDeaths,
     boolean deathSentenceEnabled,
-    boolean isOp
+    boolean isOp,
+    int defaultStocks,
+    int deathSentenceWindowSeconds
 ) implements CustomPacketPayload {
 
     public static final Type<ConfigSnapshotPayload> TYPE = new Type<>(
@@ -50,12 +52,15 @@ public record ConfigSnapshotPayload(
             buf.writeBoolean(p.countSuffocationDeaths());
             buf.writeBoolean(p.deathSentenceEnabled());
             buf.writeBoolean(p.isOp());
+            buf.writeVarInt(p.defaultStocks());
+            buf.writeVarInt(p.deathSentenceWindowSeconds());
         },
         buf -> new ConfigSnapshotPayload(
             buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(),
             buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(),
             buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(),
-            buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean()
+            buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(),
+            buf.readVarInt(), buf.readVarInt()
         )
     );
 
@@ -67,7 +72,9 @@ public record ConfigSnapshotPayload(
             cfg.countFireDeaths, cfg.countDrownDeaths, cfg.countFreezeDeaths,
             cfg.countMagicDeaths, cfg.countSuffocationDeaths,
             cfg.deathSentenceEnabled,
-            player.createCommandSourceStack().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)
+            player.createCommandSourceStack().permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER),
+            cfg.defaultStocks,
+            cfg.deathSentenceWindowSeconds
         );
     }
 

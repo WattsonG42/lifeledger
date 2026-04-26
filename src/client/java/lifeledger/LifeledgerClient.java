@@ -35,6 +35,7 @@ public class LifeledgerClient implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             StockCache.clear();
             ConfigSnapshotCache.clear();
+            ImpactFrameRenderer.reset();
         });
     }
 }

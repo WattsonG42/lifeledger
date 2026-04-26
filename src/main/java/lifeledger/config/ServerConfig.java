@@ -2,7 +2,7 @@ package lifeledger.config;
 
 public class ServerConfig {
     public int defaultStocks = 3;
-    public String banMessage = "Lol noober";
+    public String banMessage = "Thou art never to return";
 
     public boolean countMobDeaths = true;
     public boolean countPvpDeaths = true;
