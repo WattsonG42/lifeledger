@@ -4,6 +4,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 public class LifeledgerClient implements ClientModInitializer {
@@ -25,6 +27,16 @@ public class LifeledgerClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(DeathSentencePayload.TYPE, (payload, context) ->
             context.client().execute(ImpactFrameRenderer::trigger)
+        );
+
+        ClientPlayNetworking.registerGlobalReceiver(DeathSentenceClearedPayload.TYPE, (payload, context) ->
+            context.client().execute(() -> {
+                if (context.client().player != null) {
+                    context.client().player.sendSystemMessage(
+                        Component.literal("You are safe... for now.").withStyle(ChatFormatting.DARK_GREEN)
+                    );
+                }
+            })
         );
 
         HudElementRegistry.addLast(

@@ -6,6 +6,7 @@ import lifeledger.stocks.StockStore;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -72,6 +73,7 @@ public class Lifeledger implements ModInitializer {
         PayloadTypeRegistry.clientboundPlay().register(StockDeltaPayload.TYPE, StockDeltaPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ConfigSnapshotPayload.TYPE, ConfigSnapshotPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(DeathSentencePayload.TYPE, DeathSentencePayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(DeathSentenceClearedPayload.TYPE, DeathSentenceClearedPayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ConfigRequestPayload.TYPE, ConfigRequestPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(ConfigRequestPayload.TYPE, (payload, context) -> {
@@ -133,6 +135,16 @@ public class Lifeledger implements ModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(s -> this.server = s);
+
+        ServerTickEvents.END_SERVER_TICK.register(s -> {
+            if (!CONFIG.getConfig().deathSentenceEnabled) return;
+            for (UUID uuid : pvpTracker.consumeExpiredVictims(CONFIG.getConfig().deathSentenceWindowSeconds)) {
+                ServerPlayer p = s.getPlayerList().getPlayer(uuid);
+                if (p != null && ServerPlayNetworking.canSend(p, DeathSentenceClearedPayload.TYPE)) {
+                    ServerPlayNetworking.send(p, new DeathSentenceClearedPayload());
+                }
+            }
+        });
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, s) -> {
             ServerPlayer joiningPlayer = handler.getPlayer();

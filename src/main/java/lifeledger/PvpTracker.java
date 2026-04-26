@@ -1,6 +1,8 @@
 package lifeledger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,6 +41,17 @@ public class PvpTracker {
 
     public void clearMark(UUID target) {
         marks.remove(target);
+    }
+
+    public List<UUID> consumeExpiredVictims(int windowSeconds) {
+        long cutoff = System.currentTimeMillis() - windowSeconds * 1000L;
+        List<UUID> expired = new ArrayList<>();
+        marks.entrySet().removeIf(entry -> {
+            boolean allExpired = entry.getValue().values().stream().allMatch(ts -> ts < cutoff);
+            if (allExpired) expired.add(entry.getKey());
+            return allExpired;
+        });
+        return expired;
     }
 
     public void trackCrystal(int entityId, UUID attackerUUID) {
