@@ -43,6 +43,10 @@ public class PvpTracker {
         marks.remove(target);
     }
 
+    public void clearAllMarks() {
+        marks.clear();
+    }
+
     public List<UUID> consumeExpiredVictims(int windowSeconds) {
         long cutoff = System.currentTimeMillis() - windowSeconds * 1000L;
         List<UUID> expired = new ArrayList<>();

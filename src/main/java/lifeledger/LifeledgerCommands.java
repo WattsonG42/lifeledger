@@ -29,7 +29,7 @@ public class LifeledgerCommands {
         return src.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
     }
 
-    public static void register(StockStore stockStore) {
+    public static void register(StockStore stockStore, PvpTracker pvpTracker) {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
             dispatcher.register(
                 Commands.literal("lifeledger")
@@ -78,7 +78,17 @@ public class LifeledgerCommands {
                         .then(configToggle("dragon",        (cfg, v) -> cfg.countEnderDragonDeaths = v))
                         .then(configToggle("wither",        (cfg, v) -> cfg.countWitherDeaths = v))
                         .then(configToggle("elderguardian", (cfg, v) -> cfg.countElderGuardianDeaths = v))
-                        .then(configToggle("deathsentence", (cfg, v) -> cfg.deathSentenceEnabled = v))
+                        .then(Commands.literal("deathsentence")
+                            .then(Commands.argument("value", BoolArgumentType.bool())
+                                .executes(ctx -> {
+                                    boolean value = BoolArgumentType.getBool(ctx, "value");
+                                    Lifeledger.CONFIG.getConfig().deathSentenceEnabled = value;
+                                    Lifeledger.CONFIG.save();
+                                    if (!value) pvpTracker.clearAllMarks();
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                        "[LifeLedger] deathsentence set to " + value), true);
+                                    return 1;
+                                })))
                         .then(configToggle("explosion",     (cfg, v) -> cfg.countExplosionDeaths = v))
                         .then(configToggle("anvil",         (cfg, v) -> cfg.countAnvilDeaths = v))
                         .then(configToggle("fire",          (cfg, v) -> cfg.countFireDeaths = v))

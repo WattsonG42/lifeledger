@@ -67,7 +67,7 @@ public class Lifeledger implements ModInitializer {
         LOGGER.info("[LifeLedger] Loaded");
         CONFIG.load();
         stockStore.load();
-        LifeledgerCommands.register(stockStore);
+        LifeledgerCommands.register(stockStore, pvpTracker);
 
         PayloadTypeRegistry.clientboundPlay().register(StockListPayload.TYPE, StockListPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(StockDeltaPayload.TYPE, StockDeltaPayload.CODEC);
@@ -127,7 +127,7 @@ public class Lifeledger implements ModInitializer {
                     return true;
                 }
             }
-            if (pvpTracker.refreshIfMarked(victimUUID, attackerUUID)) {
+            if (CONFIG.getConfig().deathSentenceEnabled && pvpTracker.refreshIfMarked(victimUUID, attackerUUID)) {
                 LOGGER.info("[LifeLedger] Death Sentence window refreshed: {} still targeting {}",
                     attacker.getName().getString(), victim.getName().getString());
             }
