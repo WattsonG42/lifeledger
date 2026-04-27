@@ -19,10 +19,8 @@ import java.util.stream.Collectors;
 @Environment(EnvType.CLIENT)
 public class PlayerListScreen extends Screen {
 
-    private static final Identifier PARCHMENT      = Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "parchment_background");
-    private static final Identifier OFFLINE_ICON   = Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "offline_icon");
-    private static final Identifier FULL_HEART     = Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "full_heart");
-    private static final Identifier EXPENDED_HEART = Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "expended_heart");
+    private static final Identifier PARCHMENT    = Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "parchment_background");
+    private static final Identifier OFFLINE_ICON = Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "offline_icon");
 
     private static final int PANEL_W         = 280;
     private static final int PANEL_H         = 260;
@@ -177,7 +175,7 @@ public class PlayerListScreen extends Screen {
             int displayMax  = Math.min(Math.max(maxStocks, stocks), MAX_HEARTS);
             int displayFull = Math.min(stocks, displayMax);
             for (int h = 0; h < displayMax; h++) {
-                Identifier tex = h < displayFull ? FULL_HEART : EXPENDED_HEART;
+                Identifier tex = h < displayFull ? LifeledgerClient.FULL_HEART : LifeledgerClient.EXPENDED_HEART;
                 graphics.blitSprite(pipeline, tex, contentX + h * HEART_STEP, mid + 1, HEART_SIZE, HEART_SIZE);
             }
         }

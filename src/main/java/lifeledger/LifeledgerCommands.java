@@ -113,14 +113,22 @@ public class LifeledgerCommands {
         return amount;
     }
 
+    private static boolean hasJoined(UUID uuid, CommandContext<CommandSourceStack> ctx, StockStore stockStore) {
+        return stockStore.hasPlayer(uuid) || ctx.getSource().getServer().getPlayerList().getPlayer(uuid) != null;
+    }
+
     private static int cmdSet(CommandContext<CommandSourceStack> ctx, StockStore stockStore) throws CommandSyntaxException {
         NameAndId profile = singleProfile(ctx);
         UUID uuid = profile.id();
         String name = profile.name();
+        if (!hasJoined(uuid, ctx, stockStore)) {
+            ctx.getSource().sendFailure(Component.literal(name + " has not joined this server."));
+            return 0;
+        }
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         if (amount <= 0) {
-            Lifeledger.eliminate(uuid, name, stockStore, ctx.getSource().getServer(), Lifeledger.CONFIG.getConfig().banMessage);
             ctx.getSource().sendSuccess(() -> Component.literal(name + " eliminated (0 stocks)"), true);
+            Lifeledger.eliminate(uuid, name, stockStore, ctx.getSource().getServer(), Lifeledger.CONFIG.getConfig().banMessage);
             return 0;
         }
         stockStore.setStocks(uuid, amount);
@@ -134,6 +142,10 @@ public class LifeledgerCommands {
         NameAndId profile = singleProfile(ctx);
         UUID uuid = profile.id();
         String name = profile.name();
+        if (!hasJoined(uuid, ctx, stockStore)) {
+            ctx.getSource().sendFailure(Component.literal(name + " has not joined this server."));
+            return 0;
+        }
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         int current = Math.max(0, stockStore.getStocks(uuid));
         int total = current + amount;
@@ -149,12 +161,16 @@ public class LifeledgerCommands {
         NameAndId profile = singleProfile(ctx);
         UUID uuid = profile.id();
         String name = profile.name();
+        if (!hasJoined(uuid, ctx, stockStore)) {
+            ctx.getSource().sendFailure(Component.literal(name + " has not joined this server."));
+            return 0;
+        }
         int amount = IntegerArgumentType.getInteger(ctx, "amount");
         int current = Math.max(0, stockStore.getStocks(uuid));
         int total = Math.max(0, current - amount);
         if (total <= 0) {
-            Lifeledger.eliminate(uuid, name, stockStore, ctx.getSource().getServer(), Lifeledger.CONFIG.getConfig().banMessage);
             ctx.getSource().sendSuccess(() -> Component.literal(name + " eliminated (stocks depleted)"), true);
+            Lifeledger.eliminate(uuid, name, stockStore, ctx.getSource().getServer(), Lifeledger.CONFIG.getConfig().banMessage);
             return 0;
         }
         stockStore.setStocks(uuid, total);

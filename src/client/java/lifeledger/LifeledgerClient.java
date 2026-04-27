@@ -9,6 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 public class LifeledgerClient implements ClientModInitializer {
+    public static final Identifier FULL_HEART     = Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "full_heart");
+    public static final Identifier EXPENDED_HEART = Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "expended_heart");
+
     @Override
     public void onInitializeClient() {
         ClientConfig.load();

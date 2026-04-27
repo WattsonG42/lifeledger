@@ -2,7 +2,7 @@ package lifeledger.mixin.client;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import lifeledger.ClientConfig;
-import lifeledger.Lifeledger;
+import lifeledger.LifeledgerClient;
 import lifeledger.StockCache;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
@@ -10,7 +10,6 @@ import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -19,12 +18,6 @@ import java.util.UUID;
 
 @Mixin(PlayerTabOverlay.class)
 public class TabListMixin {
-    @Unique
-    private static final Identifier FULL_HEART =
-        Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "full_heart");
-    @Unique
-    private static final Identifier EXPENDED_HEART =
-        Identifier.fromNamespaceAndPath(Lifeledger.MOD_ID, "expended_heart");
 
     @Inject(method = "extractPingIcon", at = @At("HEAD"))
     private void drawStockHearts(
@@ -51,7 +44,7 @@ public class TabListMixin {
 
         RenderPipeline pipeline = RenderPipelines.GUI_TEXTURED;
         for (int i = 0; i < displayMax; i++) {
-            Identifier tex = i < displayFull ? FULL_HEART : EXPENDED_HEART;
+            Identifier tex = i < displayFull ? LifeledgerClient.FULL_HEART : LifeledgerClient.EXPENDED_HEART;
             graphics.blitSprite(pipeline, tex, startX + i * step, rowY, 9, 9);
         }
     }

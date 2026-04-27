@@ -216,6 +216,11 @@ public class Lifeledger implements ModInitializer {
         stockStore.removePlayer(uuid);
         stockStore.save();
         broadcastDelta(server, uuid, 0, true);
+        server.getPlayerList().broadcastSystemMessage(
+            Component.literal(name + " was laid to rest.")
+                .withStyle(ChatFormatting.DARK_RED),
+            false
+        );
         NameAndId nameAndId = new NameAndId(uuid, name);
         server.getPlayerList().getBans().add(new UserBanListEntry(nameAndId, null, null, null, reason));
         ServerPlayer online = server.getPlayerList().getPlayer(uuid);
